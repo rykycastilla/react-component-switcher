@@ -1,0 +1,4 @@
+.gitignore
+LICENSE
+src/
+tsconfig.json

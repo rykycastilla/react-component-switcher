@@ -1,0 +1,21 @@
+{
+  "name": "react-component-switcher",
+  "version": "1.0.0",
+  "description": "A React Hook to show/hide a component and use temporal props with it",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "react",
+    "react-native",
+    "switcher",
+    "switch"
+  ],
+  "author": "RykyCE",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "5.1.3"
+  }
+}

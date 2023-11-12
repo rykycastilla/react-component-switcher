@@ -1,5 +1,11 @@
 import { BooleanSetter } from '../../types'
-import { Component, ComponentToSwitch, encapsulate, SwitchableComponent } from './switchable_component'
+import {
+  CallFunction,
+  Component,
+  ComponentToSwitch,
+  encapsulate,
+  SwitchableComponent
+} from './switchable_component'
 import Empty from '../../components/Empty'
 import getBigNumber from '../../scripts/get_big_number'
 import { useMemo, useState } from 'react'
@@ -12,8 +18,9 @@ function useSwitch<P,CP>( DefaultComponent:ComponentToSwitch<P,CP>, wait=0 ): Sw
   const [ callerProps, setCallerProps ] = useState( null as CP )
   // Building an ID for "SwitchableComponent"
   const switcherID = useMemo( () => {
-    let id: number
-    while( true ) {
+    let id = 0
+    const execute = true
+    while( execute ) {
       id = getBigNumber()
       // if this "id" does not exist, stop trying
       if( !switchersRegistry[ id ] ) { break }
@@ -25,10 +32,9 @@ function useSwitch<P,CP>( DefaultComponent:ComponentToSwitch<P,CP>, wait=0 ): Sw
     // Show "SwitchableComponent" and take "CallerProps" as "Component Props"
     function call( callerProps:CP ) {
       if( !showComponent ) {
-      setCallerProps( callerProps )
-      setShowComponent( true )
+        setCallerProps( callerProps )
+        setShowComponent( true )
       }
-      else { throw( 'You can not call the Switchable Component if this is on Display' ) }
     }
     // Hide "SwitchableComponent"
     function hide() {
@@ -39,18 +45,17 @@ function useSwitch<P,CP>( DefaultComponent:ComponentToSwitch<P,CP>, wait=0 ): Sw
         // Hiding "SwitchableComponent" after "wait"
         setTimeout( () => setShowComponent( false ), wait )
       }
-      else { throw( 'You can not hide the Switchable Component if this is not on Display' ) }
     }
     // Structuring Component Visibility
     const Component: Component<P> = showComponent
       ? encapsulate<P,CP>( DefaultComponent, callerProps, switcherID )
       : Empty
     return {
-        Component: Component,
-        call: call,
-        hide: hide,
-        showing: showComponent,
-      }
+      Component: Component,
+      call: call as CallFunction<CP>,
+      hide: hide,
+      showing: showComponent,
+    }
   }, [ showComponent, callerProps, wait ] )
   return Switchable
 }

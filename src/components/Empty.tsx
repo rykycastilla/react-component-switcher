@@ -1,6 +1,6 @@
-import { ReactElement } from 'react'
+import React, { ReactElement } from 'react'
 
-function Empty(): ReactElement {
+const Empty = (): ReactElement => {
   return <></>
 }
 

@@ -1,24 +1,28 @@
 import Component from '../types/Component'
 import ContextProvider from './ContextProvider'
-import React, { ReactElement, useEffect } from 'react'
+import React, { ReactElement, useEffect, useState } from 'react'
 import SwitchableComponent from './SwitchableComponent'
 import SwitchableManager from '../classes/SwitchableManager'
 import useVisbility from '../hooks/visibility'
 
-interface SwitchableComponentContextProps<P extends object> {
-  Component: Component<P>,
+interface SwitchableComponentContextProps<P extends object,CP> {
+  Component: Component<P,CP>,
   props: P,
-  manager: SwitchableManager,
+  manager: SwitchableManager<CP>,
   hidingDelay: number,
 }
 
-function SwitchableComponentContext<P extends object>( props:SwitchableComponentContextProps<P> ): ReactElement {
+function SwitchableComponentContext<P extends object,CP>( props:SwitchableComponentContextProps<P,CP> ): ReactElement {
   const { Component, props:componentProps, manager, hidingDelay } = props
   const { hiding, rendering, setVisibility } = useVisbility( hidingDelay )
+  const [ callerProps, setCallerProps ] = useState( undefined as CP )
   useEffect( () => {
     // Declaring manager functions
-    function show() {
-      if( !rendering ) { setVisibility( true ) }
+    function show( callerProps?:CP ) {
+      if( !rendering ) {
+        setCallerProps( callerProps as CP )
+        setVisibility( true )
+      }
     }
     function hide() {
       if( rendering ) { setVisibility( false ) }
@@ -31,7 +35,11 @@ function SwitchableComponentContext<P extends object>( props:SwitchableComponent
   }, [ hiding, rendering ] )
   return (
     <ContextProvider hiding={ hiding }>
-      <SwitchableComponent Component={ Component } props={ componentProps } rendering={ rendering } />
+      <SwitchableComponent
+        Component={ Component }
+        props={ componentProps }
+        callerProps={ callerProps }
+        rendering={ rendering } />
     </ContextProvider>
   )
 }

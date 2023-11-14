@@ -3,12 +3,12 @@ import React, { ReactElement, useMemo } from 'react'
 import SwitchableComponentContext from '../components/SwitchableComponentContext'
 import SwitchableManager from '../classes/SwitchableManager'
 
-type SwitchableComponent<P extends object> = Component<P> & SwitchableManager
+type SwitchableComponent<P extends object,CP> = Component<P,CP> & SwitchableManager<CP>
 
 // Create a new component with the content of an specific Component (taking specific props)
-function useSwitch<P extends object>( Component:Component<P>, delay=0 ): SwitchableComponent<P> {
+function useSwitch<P extends object,CP>( Component:Component<P,CP>, delay=0 ): SwitchableComponent<P,CP> {
   const SwitchableComponent = useMemo( () => {
-    const manager = new SwitchableManager()
+    const manager = new SwitchableManager<CP>()
     // Encapsulating Component to create a Context for custom hooks
     const ComponentToSwitch = ( props:P ): ReactElement => {
       return (

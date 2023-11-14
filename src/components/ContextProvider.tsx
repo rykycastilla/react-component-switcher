@@ -9,7 +9,7 @@ interface ContextProviderProps {
   hiding: boolean,
 }
 
-const ContextProvider = ( props:ContextProviderProps ): ReactElement => {
+function ContextProvider( props:ContextProviderProps ): ReactElement {
   const { children, hiding } = props
   const switchableContext: SwitchableContext = { hiding }
   return (

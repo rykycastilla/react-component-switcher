@@ -1,11 +1,9 @@
-import switchersRegistry from '../objects/switchers_registry'
-import { useState } from 'react'
+import { Context } from '../components/ContextProvider'
+import { useContext } from 'react'
 
 // Hook: Return "true" when an speciic component (based on "id") is going to be hidden
-function useHiding( id:number ): boolean {
-  const [ hiding, setHiding ] = useState( false )
-  // Saving state setter at "switchersRegitry" to update from another place
-  switchersRegistry[ id ] = setHiding
+function useHiding(): boolean {
+  const { hiding } = useContext( Context )
   return hiding
 }
 

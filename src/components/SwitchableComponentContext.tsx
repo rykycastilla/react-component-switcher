@@ -1,5 +1,6 @@
 import Component from '../types/Component'
 import ContextProvider from './ContextProvider'
+import Errors from '../enums/Errors'
 import React, { ReactElement, useEffect, useState } from 'react'
 import SwitchableComponent from './SwitchableComponent'
 import SwitchableManager from '../classes/SwitchableManager'
@@ -23,9 +24,11 @@ const SwitchableComponentContext = <P extends object,CP>( props:SwitchableCompon
         setCallerProps( callerProps as CP )
         setVisibility( true )
       }
+      else { console.warn( Errors.ON_DISPLAY ) }
     }
     function hide() {
       if( rendering ) { setVisibility( false ) }
+      else { console.warn( Errors.NOT_ON_DISPLAY ) }
     }
     function getRendering(): boolean {
       return rendering

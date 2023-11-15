@@ -1,9 +1,8 @@
 import Component from '../types/Component'
 import React, { ReactElement, useMemo } from 'react'
+import SwitchableComponent from '../types/SwitchableComponent'
 import SwitchableComponentContext from '../components/SwitchableComponentContext'
 import SwitchableManager from '../classes/SwitchableManager'
-
-type SwitchableComponent<P extends object,CP> = Component<P,CP> & SwitchableManager<CP>
 
 // Create a new component with the content of an specific Component (taking specific props)
 function useSwitch<P extends object,CP>( Component:Component<P,CP>, delay=0 ): SwitchableComponent<P,CP> {
@@ -25,4 +24,3 @@ function useSwitch<P extends object,CP>( Component:Component<P,CP>, delay=0 ): S
 }
 
 export default useSwitch
-export { SwitchableComponent }

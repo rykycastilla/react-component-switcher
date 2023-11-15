@@ -1,5 +1,6 @@
 export type { default as Component } from './types/Component'
+export type { default as SwitchableComponent } from './types/SwitchableComponent'
 export { default as useHiding } from './hooks/hiding'
+export { default as useRendering } from './hooks/rendering'
 export { default, default as useSwitch } from './hooks/switch'
-export type { HideFunction, ShowFunction } from './classes/SwitchableManager'
-export type { SwitchableComponent } from './hooks/switch'
+export type { HideFunction, ShowFunction, SwitchableManager } from './classes/SwitchableManager'

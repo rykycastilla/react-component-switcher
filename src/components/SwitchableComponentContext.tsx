@@ -34,7 +34,7 @@ function SwitchableComponentContext<P extends object,CP>( props:SwitchableCompon
     SwitchableManager.use( manager, { show, hide, getRendering } )
   }, [ hiding, rendering ] )
   return (
-    <ContextProvider hiding={ hiding }>
+    <ContextProvider hiding={ hiding } hide={ manager.hide }>
       <SwitchableComponent
         Component={ Component }
         componentProps={ componentProps }

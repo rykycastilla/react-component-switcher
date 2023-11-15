@@ -14,7 +14,7 @@ interface ContextProviderProps {
   hide: HideFunction,
 }
 
-function ContextProvider( props:ContextProviderProps ): ReactElement {
+const ContextProvider = ( props:ContextProviderProps ): ReactElement => {
   const { children, hiding, hide } = props
   const switchableContext: SwitchableContext = { hiding, hide }
   return (

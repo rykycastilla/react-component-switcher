@@ -10,7 +10,7 @@ interface SwitchableComponentProps<P extends object,CP> {
 }
 
 // Create or destroy a new Switchable Component instance
-function SwitchableComponent<P extends object,CP>( props:SwitchableComponentProps<P,CP> ): ReactElement {
+const SwitchableComponent = <P extends object,CP>( props:SwitchableComponentProps<P,CP> ): ReactElement => {
   const { Component, componentProps, callerProps, rendering } = props
   const content = { Component, componentProps, callerProps }
   return rendering

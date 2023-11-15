@@ -12,7 +12,7 @@ interface SwitchableComponentContextProps<P extends object,CP> {
   hidingDelay: number,
 }
 
-function SwitchableComponentContext<P extends object,CP>( props:SwitchableComponentContextProps<P,CP> ): ReactElement {
+const SwitchableComponentContext = <P extends object,CP>( props:SwitchableComponentContextProps<P,CP> ): ReactElement => {
   const { Component, componentProps, manager, hidingDelay } = props
   const { hiding, rendering, setVisibility } = useVisbility( hidingDelay )
   const [ callerProps, setCallerProps ] = useState( undefined as CP )

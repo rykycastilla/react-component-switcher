@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from 'react'
 
 type FunctionVoid = () => void
 type FunctionBoolean = () => boolean
-type HideFunction = FunctionVoid
+type HideFunction = () => void
 // "callerProps" arg required only if it was delcared in the Component
 type ShowFunction<CP> = unknown extends CP ? FunctionVoid : ( callerProps:CP ) => void
 type BooleanSetter = Dispatch<SetStateAction<boolean>>

@@ -7,13 +7,13 @@ import useVisbility from '../hooks/visibility'
 
 interface SwitchableComponentContextProps<P extends object,CP> {
   Component: Component<P,CP>,
-  props: P,
+  componentProps: P,
   manager: SwitchableManager<CP>,
   hidingDelay: number,
 }
 
 function SwitchableComponentContext<P extends object,CP>( props:SwitchableComponentContextProps<P,CP> ): ReactElement {
-  const { Component, props:componentProps, manager, hidingDelay } = props
+  const { Component, componentProps, manager, hidingDelay } = props
   const { hiding, rendering, setVisibility } = useVisbility( hidingDelay )
   const [ callerProps, setCallerProps ] = useState( undefined as CP )
   useEffect( () => {
@@ -37,7 +37,7 @@ function SwitchableComponentContext<P extends object,CP>( props:SwitchableCompon
     <ContextProvider hiding={ hiding }>
       <SwitchableComponent
         Component={ Component }
-        props={ componentProps }
+        componentProps={ componentProps }
         callerProps={ callerProps }
         rendering={ rendering } />
     </ContextProvider>

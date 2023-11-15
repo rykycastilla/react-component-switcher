@@ -14,7 +14,7 @@ function useSwitch<P extends object,CP>( Component:Component<P,CP>, delay=0 ): S
       return (
         <SwitchableComponentContext
           Component={ Component }
-          props={ props }
+          componentProps={ props }
           manager={ manager }
           hidingDelay={ delay } />
       )

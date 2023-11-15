@@ -36,6 +36,9 @@ const SwitchableComponentContext = <P extends object,CP>( props:SwitchableCompon
     // Using functions as methods of the manager (to make them public)
     SwitchableManager.use( manager, { show, hide, getRendering } )
   }, [ hiding, rendering ] )
+  useEffect( () => {
+    SwitchableManager.makeComponentMatch( manager )
+  }, [] )
   return (
     <ContextProvider hiding={ hiding } hide={ manager.hide }>
       <SwitchableComponent

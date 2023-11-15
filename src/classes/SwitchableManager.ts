@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from 'react'
+import Errors from '../enums/Errors'
 
 type FunctionVoid = () => void
 type FunctionBoolean = () => boolean
@@ -15,6 +16,7 @@ interface LoadParams<CP> {
 
 class SwitchableManager<CP> {
 
+  private componentMatch = false
   private readonly emptyFunction: FunctionVoid = () => { return }
   private readonly loading: Promise<void>
   private resolve: FunctionVoid = this.emptyFunction // Used to resolve the loading promise globally
@@ -68,6 +70,14 @@ class SwitchableManager<CP> {
     if( previousRenderingState !== currentRenderingState ) {
       instance.updateRenderingState( currentRenderingState )
     }
+  }
+
+  // Assign a Component to the manager. If a "match" already exists it will return an Error
+  static makeComponentMatch<CP>( instance:SwitchableManager<CP> ) {
+    if( instance.componentMatch ) {
+      throw( Errors.TOO_MANY_COMPONENTS )
+    }
+    instance.componentMatch = true
   }
 
   // Get the current value of rendering (no state)

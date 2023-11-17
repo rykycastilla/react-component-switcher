@@ -37,7 +37,7 @@ const SwitchableComponentContext = <P extends object,CP>( props:SwitchableCompon
     SwitchableManager.use( manager, { show, hide, getRendering } )
   }, [ hiding, rendering ] )
   useEffect( () => {
-    SwitchableManager.makeComponentMatch( manager )
+    SwitchableManager.setComponentOnTree( manager )
   }, [] )
   return (
     <ContextProvider hiding={ hiding } hide={ manager.hide }>

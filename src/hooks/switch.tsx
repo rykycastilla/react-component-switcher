@@ -1,5 +1,5 @@
 import Component from '../types/Component'
-import React, { ReactElement, useMemo } from 'react'
+import React, { ReactElement, useEffect, useMemo } from 'react'
 import SwitchableComponent from '../types/SwitchableComponent'
 import SwitchableComponentContext from '../components/SwitchableComponentContext'
 import SwitchableManager from '../classes/SwitchableManager'
@@ -19,7 +19,11 @@ function useSwitch<P extends object,CP>( Component:Component<P,CP>, delay=0 ): S
       )
     }
     return Object.assign( ComponentToSwitch, manager )
-  }, [ delay ] )
+  }, [] )
+  // Allowing execution of methods (when parent component is mounted)
+  useEffect( () => {
+    SwitchableManager.mountParent( SwitchableComponent )
+  }, [ SwitchableManager ] )
   return SwitchableComponent
 }
 

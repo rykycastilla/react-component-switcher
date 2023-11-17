@@ -16,20 +16,20 @@ interface LoadParams<CP> {
 
 class SwitchableManager<CP> {
 
-  private componentMatch = false
+  private componentOnTree = false
+  private readonly mountParent: FunctionVoid
+  private readonly parentMounted: Promise<void>
   private readonly emptyFunction: FunctionVoid = () => { return }
-  private readonly loading: Promise<void>
-  private resolve: FunctionVoid = this.emptyFunction // Used to resolve the loading promise globally
   private showAction: ShowFunction<CP> = this.emptyFunction
   private hideAction: FunctionVoid = this.emptyFunction
   private getRendering: FunctionBoolean = () => { return false }
   private readonly renderingSetters: BooleanSetter[] = []
 
   constructor() {
-    // Declaring loading promise and making global its resolve function
-    this.loading = new Promise( resolve => {
-      this.resolve = resolve
-    } )
+    let mountParent: FunctionVoid = this.emptyFunction
+    // mountParent only should be executed when the component containing the Switchable declaration is mounted
+    this.parentMounted = new Promise( resolve => mountParent = resolve )
+    this.mountParent = mountParent
   }
 
   private updateRenderingState = ( newState:boolean ) => {
@@ -44,17 +44,17 @@ class SwitchableManager<CP> {
     this.showAction = show
     this.hideAction = hide
     this.getRendering = getRendering
-    // Get Ready with the manager
-    this.resolve()
   }
 
   public show: ShowFunction<CP> = async( callerProps?:CP ) => {
-    await this.loading
+    await this.parentMounted
+    if( !this.componentOnTree ) { throw( Errors.NOT_ON_TREE ) }
     this.showAction( callerProps as CP )
   }
 
   public hide: HideFunction = async() => {
-    await this.loading
+    await this.parentMounted
+    if( !this.componentOnTree ) { throw( Errors.NOT_ON_TREE ) }
     this.hideAction()
   }
 
@@ -73,11 +73,11 @@ class SwitchableManager<CP> {
   }
 
   // Assign a Component to the manager. If a "match" already exists it will return an Error
-  static makeComponentMatch<CP>( instance:SwitchableManager<CP> ) {
-    if( instance.componentMatch ) {
+  static setComponentOnTree<CP>( instance:SwitchableManager<CP> ) {
+    if( instance.componentOnTree ) {
       throw( Errors.TOO_MANY_COMPONENTS )
     }
-    instance.componentMatch = true
+    instance.componentOnTree = true
   }
 
   // Get the current value of rendering (no state)
@@ -97,6 +97,12 @@ class SwitchableManager<CP> {
     const index: number = instance.renderingSetters.indexOf( setter )
     // Erasing based on index
     instance.renderingSetters.splice( index, 1 )
+  }
+
+  // Indicates that the parent component was mounted
+  // Prepare the manager to execute public methods cause all children has been mounted (probably incluiding the switchabe component)
+  static mountParent<CP>( instance:SwitchableManager<CP> ) {
+    instance.mountParent()
   }
 
 }

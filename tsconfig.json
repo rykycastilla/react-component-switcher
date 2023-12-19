@@ -9,7 +9,6 @@
     "outDir": "./dist",                              
     "noImplicitReturns": true,
     "noImplicitAny": true,
-    "noUnusedLocals": true,                        
     "skipLibCheck": true,
     "resolveJsonModule": true ,
     "removeComments": true,                             

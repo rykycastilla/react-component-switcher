@@ -1,18 +1,19 @@
+import ManagerCore from '../classes/ManagerCore'
 import SwitchableManager from '../classes/SwitchableManager'
 import { useEffect, useState } from 'react'
 
 function useRendering<CP>( manager:SwitchableManager<CP> ): boolean {
   // Setting default value
-  const getDefaultRendering = (): boolean => SwitchableManager.getRendering( manager )
-  const [ rendering, setRendering ] = useState( getDefaultRendering )
+  const managerCore: ManagerCore<CP> = SwitchableManager.extractCore( manager ),
+    defaultRendering: boolean = managerCore.rendering
+  const [ rendering, setRendering ] = useState( defaultRendering )
   // Suscribing to change when it is needed
   useEffect( () => {
-    SwitchableManager.suscribeRenderSetter( manager, setRendering )
+    managerCore.suscribeRenderSetter( setRendering )
     return () => {
-      SwitchableManager.unsuscribeRenderSetter( manager, setRendering )
+      managerCore.unsuscribeRenderSetter( setRendering )
     }
   }, [] )
-  manager
   return rendering
 }
 

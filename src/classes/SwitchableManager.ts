@@ -14,7 +14,7 @@ type ShowFunction<CP> = unknown extends CP ? FunctionVoid : ( callerProps:CP ) =
 
 class SwitchableManager<CP> {
 
-  public readonly coreReference: ManagerReference<CP>
+  private readonly coreReference: ManagerReference<CP>
 
   // Access the core of the current manager
   private getCore = (): ManagerCore<CP> => {

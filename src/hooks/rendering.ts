@@ -1,8 +1,9 @@
 import ManagerCore from '../classes/ManagerCore'
+import SwitchableComponent from '../types/SwitchableComponent'
 import SwitchableManager from '../classes/SwitchableManager'
 import { useEffect, useState } from 'react'
 
-function useRendering<CP>( manager:SwitchableManager<CP> ): boolean {
+function useRendering<P extends object,CP>( manager:SwitchableComponent<P,CP> ): boolean {
   // Setting default value
   const managerCore: ManagerCore<CP> = SwitchableManager.extractCore( manager ),
     defaultRendering: boolean = managerCore.rendering

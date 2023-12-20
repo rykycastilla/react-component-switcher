@@ -1,6 +1,6 @@
 {
   "name": "react-component-switcher",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "A React Hook to show/hide a component and use temporal props with it",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

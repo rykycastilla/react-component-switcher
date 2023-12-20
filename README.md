@@ -1,269 +1,200 @@
-# react-component-switcher
-This is a library to provide **React Hooks** to create switchable **Components** (hiding and showing it)
+# react-component-switcher 2.0
+This is a library to create Switchable Components
+
+> **WARNING:** This version of the library has API changes, do not use it for existing projects without refactoring
+
+## Install
+You must install it using `npm`
+``` bash
+npm install react-component-switcher
+```
 
 ## API
-The API offers two hooks (`useSwitch` and `useHiding`) and four types (`SwitchableComponent`, `Component`, `CallFunction` and `HideFunction`).
+The API offers three hooks (`useHide`, `useHiding` and `useRendering`), three types (`SwitchableComponent`, `CallFunction` and `HideFunction`) and one factory function (`CreateSwitchable`).
 
-### useSwitch
-This hook receives a `Component` and return a `SwitchableComponent` object with the structure `{ Component:Component, call:CallFunction, hide:HideFunction, showing:boolean }`
+### `CreateSwitchable`
+This is a factory function to make a single **React Component** switchable. It receives a Component and return its `SwitchableComponent`.
 
-#### `Component: Component`
-The property `Component` contain a "switchable" **Rect Component**, it can be handled (showed and hidden) using the other members of `SwitchableComponent`
 ``` TSX
-import React, { CSSProperties, ReactElement, useState } from 'react'
-import useSwitch from 'react-component-switcher'
+// Component.tsx
+import CreateSwitchable from 'react-component-switcher'
+import React, { ReactElement } from 'react'
 
-function Component(): ReactElement { ... }
+const Component = (): ReactElement => {
+  return <></>
+}
 
-function App(): ReactElement {
-  // Using Hook and Component
-  const SwitchableComponent = useSwitch( Component )
-  return <SwitchableComponent.Component />
+export default CreateSwitchable( Component )
+```
+<sup>[1][2]</sup>
+
+### `SwitchableComponent`
+This is a React Component with some methods to handle its visibility imperatively. You have to call it as a single component to use it in the React Tree<sup>[3]</sup>.
+
+``` TSX
+// App.tsx
+import Component from './Component'
+import React, { ReactElement } from 'react'
+
+const App = (): ReactElement => {
+  // Calling the component in the React Tree to use it
+  return <Component />
 }
 
 export default App
 ```
-<sup>[1]</sup>
+<sup>[4]</sup>
 
-#### `call: CallFunction`
-With this method you can show the switchable component<sup>[2]</sup>. Also it receives an argument to use its value at `callerProps` parameter
+#### `show: ShowFunction<CP>`<sup>[5]</sup>
+This method is used to *call* the switchable component
+
 ``` TSX
-// App.tsx
+// Component.tsx
+import CreateSwitchable from 'react-component-switcher'
 import React, { ReactElement } from 'react'
-import useSwitch from 'react-component-switcher'
 
-interface TextCallerProps { text:string }
-
-function Text( props:unknown, callerProps:TextCallerProps ): ReactElement {
-  // Destructuring "callerProps"
-  const { text } = callerProps
-  return <p>{ text }</p>
+const Component = (): ReactElement => {
+  return <h2>Switchable text</h2>
 }
 
-function App(): ReactElement {
-  const SwitchableText = useSwitch( Text )
+export default CreateSwitchable( Component )
+```
+
+``` TSX
+// App.tsx
+import Component from './Component'
+import React, { ReactElement } from 'react'
+
+const App = (): ReactElement => {
   return (
     <>
-      <input type="button" value="Show" onClick={
-        () => {
-          const callerProps: TextCallerProps = { text: 'Hello World!' }
-          // Sending "callerProps" when component is called
-          SwitchableText.call( callerProps )
-        }
-      } />
-      { /* Using Switchable Component */ }
-      <SwitchableText.Component />
+      { /* This button can show the switchable component */ }
+      <input type="button" value="Show" onClick={ () => Component.show() } />
+      <Component />
     </>
   )
 }
 
 export default App
 ```
-<sup>[3]</sup>
+
+If you want to pass a custom value in every *show* call to work with it inside the switchable component: you can use `callerProps`<sup>[6]</sup>
+
+``` TSX
+// Component.tsx
+import CreateSwitchable from 'react-component-switcher'
+import React, { ReactElement } from 'react'
+
+interface ComponentCallerProps { message:string }
+
+const Component = ( props:object, callerProps:ComponentCallerProps ): ReactElement => {
+  // Using callerProps
+  const { message } = callerProps
+  return <h2>{ message }</h2>
+}
+
+export default CreateSwitchable( Component )
+```
+
+``` TSX
+// App.tsx
+import Component from './Component'
+import React, { ReactElement } from 'react'
+
+const App = (): ReactElement => {
+  return (
+    <>
+      <input type="textfield" id="input" />
+      <input
+        type="button"
+        value="Show"
+        onClick={
+          () => {
+            // Getting the current value of the input element
+            const $input = document.getElementById( 'input' ) as HTMLInputElement
+            const message: string = $input.value
+            // Using the current value with the component
+            Component.show( { message } )
+          }
+        } />
+      <Component />
+    </>
+  )
+}
+
+export default App
+```
+<sup>[7]</sup>
 
 #### `hide: HideFunction`
-This method is used to hide the switchable component
+**hide** method is used to hide the switchable component and quit it of the page flow (destroying it temporarily)
+
+``` TSX
+// Component.tsx
+import CreateSwitchable from 'react-component-switcher'
+import React, { ReactElement } from 'react'
+
+const Component = (): ReactElement => {
+  return <h2>Switchable text</h2>
+}
+
+export default CreateSwitchable( Component )
+```
+
 ``` TSX
 // App.tsx
-import React, { CSSProperties, ReactElement, useState } from 'react'
-import useSwitch, { HideFunction } from 'react-component-switcher'
+import Component from './Component'
+import React, { ReactElement } from 'react'
 
-interface AlertProps { quit:HideFunction }
-
-interface AlertCallerProps {
-  text: string,
-  textColor: string,
-}
-
-function Alert( props:AlertProps, callerProps:AlertCallerProps ): ReactElement {
-  const { quit } = props
-  const { text, textColor } = callerProps
-  return (
-    <div style={ styles.alertCard }>
-      <p style={ { color: textColor } }>{ text }</p>
-      { /* Using hide as quit at onClick event */ }
-      <input type="button" value="Accept" style={ styles.alertButton } onClick={ quit } />
-    </div>
-  )
-}
-
-function App(): ReactElement {
-  const [ alertText, setAlertText ] = useState( '' )
-  // Using Hook
-  const SwitchableAlert = useSwitch( Alert )
+// Show/Hide buttons
+const ControlButtons = (): ReactElement => {
   return (
     <>
-      {
-        // Passing "SwitchableAlert.hide" as "quit"
-        // "SwitchableAlert" is an state, and states must be passed as props
-      }
-      <SwitchableAlert.Component quit={ SwitchableAlert.hide } />
-      <input type="textfield" placeholder="Write a message here!" style={ styles.input } onChange={
-        event => {
-          const { value } = event.target
-          setAlertText( value )
-        }
-      } />
-      <br />
-      <input
-        type="button"
-        value="Show Alert"
-        style={ styles.input }
-        onClick={
-          () => {
-            const callerProps: AlertCallerProps = {
-              text: alertText,
-              textColor: 'gray',
-            }
-            SwitchableAlert.call( callerProps )
-          }
-        } />
+      <input type="button" value="Show'" onClick={ Component.show } />
+
+      { /* Hide function here (at "onClick") */ }
+      <input type="button" value="Hide'" onClick={ Component.hide } />
     </>
   )
 }
 
-// React styles
-const styles = {
-  alertCard: {
-    width: 200,
-    height: 200,
-    position: 'fixed',
-    marginTop: 25,
-    marginLeft: 25,
-    borderRadius: 25,
-    backgroundColor: '#F0F0F0',
-    textAlign: 'center',
-    display: 'flex',
-    alignItem: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-  } as CSSProperties,
-  alertButton: {
-    outline: 'none',
-    border: 'none',
-    backgroundColor: 'rgba( 0, 0, 0, 0 )',
-    color: 'black',
-    fontWeight: '900',
-    cursor: 'pointer',
-  } as CSSProperties,
-  input: {
-    marginTop: 25,
-    marginLeft: 25,
-    border: 'none',
-    textAlign: 'center',
-  } as CSSProperties,
+const App = (): ReactElement => {
+  return (
+    <>
+      <ControlButtons />
+      <Component />
+    </>
+  )
 }
 
 export default App
 ```
-<sup>[4][5]</sup>
 
-#### `showing: boolean`
-This property is used to know if the switchable component is visible right now.
+### useHide<sup>[8]</sup>
+The hook returns a `HideFunction`, providing to the switchable component the capability to hide itself.
 
-### useHiding
-`useHiding` is a hook provided to know when the switchable component is created or destroyed. To used it you have to pass the parameter `id:number` of the *component to switch* as an argument of `useHiding`, after that, it will return `false` if the component is showing or `true` if it will hide<sup>[6]</sup>. 
-It also would be used to implement animations if you pass a `wait:number` argument (in miliseconds) to `useSwitch`, it will delay the hiding process to include an animation
+### useHiding <sup>[8]</sup>
+`useHiding` is a hook provided to know when the switchable component is being destroyed. It will return `false` if the component is showing or `true` if it will hide. 
+It also would be used to implement animations if you pass a `hidingDelay:number` argument (in miliseconds) to `CreateSwitchable`, it will delay the hiding process to include an animation
+
 ``` TSX
-// App.tsx
-import './app.css'
-import React, { CSSProperties, ReactElement, useState } from 'react'
-import useSwitch, { HideFunction, useHiding } from 'react-component-switcher'
+// Component.tsx
+import CreateSwitchable, { useHiding } from 'react-component-switcher'
+import React, { ReactElement } from 'react'
+import './component.css'
 
-interface AlertProps { quit:HideFunction }
-
-interface AlertCallerProps {
-  text: string,
-  textColor: string,
+const Component = (): ReactElement => {
+  // Using Hiding hook
+  const hiding: boolean = useHiding()
+  const state: string = hiding ? 'hiding' : 'showing'
+  return <h2 className={ state }>Fadeable Text</h2>
 }
 
-function Alert( props:AlertProps, callerProps:AlertCallerProps, id:number ): ReactElement {
-  const { quit } = props
-  const { text, textColor } = callerProps
-  // Using Hiding Hook
-  const hiding = useHiding( id )
-  return (
-    <>
-      {
-        // Using ternary operator to set the class name with the correct animation
-        // To understand that, look at "app.css" below it
-      }
-      <div
-        className={ hiding ? 'hiding' : 'showing' }
-        style={ styles.alertCard }>
-        <p style={ { color: textColor } }>{ text }</p>
-        <input type="button" value="Accept" style={ styles.alertButton } onClick={ quit } />
-      </div>
-    </>
-  )
-}
-
-function App(): ReactElement {
-  const [ alertText, setAlertText ] = useState( '' )
-  // Passing "500" miliseconds to "useSwitch", to delay hiding process
-  const SwitchableAlert = useSwitch( Alert, 500 )
-  return (
-    <>
-      <SwitchableAlert.Component quit={ SwitchableAlert.hide } />
-      <input type="textfield" placeholder="Write a message here!" style={ styles.input } onChange={
-        event => {
-          const { value } = event.target
-          setAlertText( value )
-        }
-      } />
-      <br />
-      <input
-        type="button"
-        value="Show Alert"
-        style={ styles.input }
-        onClick={
-          () => {
-            const callerProps: AlertCallerProps = {
-              text: alertText,
-              textColor: 'gray',
-            }
-            SwitchableAlert.call( callerProps )
-          }
-        } />
-    </>
-  )
-}
-
-const styles = {
-  alertCard: {
-    width: 200,
-    height: 200,
-    position: 'fixed',
-    marginTop: 25,
-    marginLeft: 25,
-    borderRadius: 25,
-    backgroundColor: '#F0F0F0',
-    textAlign: 'center',
-    display: 'flex',
-    alignItem: 'center',
-    justifyContent: 'center',
-    flexDirection: 'column',
-  } as CSSProperties,
-  alertButton: {
-    outline: 'none',
-    border: 'none',
-    backgroundColor: 'rgba( 0, 0, 0, 0 )',
-    color: 'black',
-    fontWeight: '900',
-    cursor: 'pointer',
-  } as CSSProperties,
-  input: {
-    marginTop: 25,
-    marginLeft: 25,
-    border: 'none',
-    textAlign: 'center',
-  } as CSSProperties,
-}
-
-export default App
+export default CreateSwitchable( Component, 500 )  // Using hiding delay
 ```
+
 ``` CSS
-/* app.css */
+/* component.css */
 
 @keyframes show {
   from { opacity: 0 }
@@ -283,10 +214,42 @@ export default App
 }
 ```
 
+``` TSX
+// App.tsx
+import Component from './Component'
+import React, { ReactElement } from 'react'
+
+const ControlButtons = (): ReactElement => {
+  return (
+    <>
+      <input type="button" value="Show'" onClick={ Component.show } />
+      <input type="button" value="Hide'" onClick={ Component.hide } />
+    </>
+  )
+}
+
+const App = (): ReactElement => {
+  return (
+    <>
+      <ControlButtons />
+      <Component />
+    </>
+  )
+}
+
+export default App
+```
+
+### useRendering
+`useRendering` receives a `SwitchableComponent` and return `true` if it is on display right now. Cause it is a React Hook, when the rendering state changes the boolean value will change too<sup>[9]</sup>.
+
 > * This library is also compatible with **ReactNative**
 > 1. This code is not be able to work, it is only an example
-> 2. The switchable components are default hidden
-> 3. If you try to show a visible `SwitchableComponent` it will result `[Error]: You can not call the Switchable Component if this is on Display`
-> 3. If you try to hide a hidden `SwitchableComponent` it will result `[Error]: You can not hide the Switchable Component if this is not on Display`
-> 5. *React state values* must be passed as props to a switchable component. If you pass it to `callerProps` the value will not update when the state changes
-> 6. You can not get the same effect with `SwitchableComponent.showing`, cause it return the current state, but `useHiding` changes its value before the component disappears
+> 2. To full fast refresh support you should build the new Switchable Component in the same file it was declared (like the above example). Also, it is recommended to declare and build your Switchable Components in a different file than the rest of the code
+> 3. All Switchable Components are hidden by default
+> 4. You can also declare and use `props` like a single component
+> 5. Generic type `CP` represents the `callerProps` type of the `ShowFunction`
+> 6. If the component was not declared with `callerProps`, the `ShowFunction` argument must not be provided
+> 7. `callerProps` can have any data type
+> 8. This Hook cannot be executed out of a SwitchableComponent Context
+> 9. You can not get the same effect with `useHiding`, cause it changes its value before the component disappears, but `useRendering` returns the current state
